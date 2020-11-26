@@ -1,0 +1,33 @@
+#Lab 4
+
+Zad 2
+a) ALTER TABLE postac ADD COLUMN pesel VARCHAR(11);
+UPDATE postac SET pesel= id_postaci+ '15627392820';
+ALTER TABLE postac MODIFY id_postaci INT NOT NULL;
+ALTER TABLE 'nazwa' DROP FOREIGN KEY '';
+ALTER TABLE postac DROP PRIMARY KEY;
+b)ALTER TABLE postac MODIFY rodzaj ENUM('wiking', 'kobieta', 'ptak', 'syrena');
+c)INSERT INTO postac VALUES(16, 'Gertruda Nieszczera', 4,...);
+
+Zad 3
+a) UPDATE postac SET statek_1= 'qoqs' WHERE nazwa LIKE '%a%'; -Wstawiamy postacie na statek Bjorna.
+b) UPDATE statek SET max_ladownosc = max_ladownosc*0.7 WHERE data_wodowania BETWEEN '1901-01-01' AND '2000-12-31';
+c) ALTER TABLE postac ADD [CONSTRAINT nazwa_check] CHECK (wiek <= 1000); check - pozwala ustalić ograniczenia w kolumnie;
+
+Zad 4
+a)  ALTER TABLE postac MODIFY rodzaj ENUM('wiking', 'ptak', 'kobieta', 'syrena', 'waz');
+INSERT INTO postac VALUES(7, 'Loko', 4, '1999-12-12', 40, '70783904829', NULL, NULL);
+b)CREATE TABLE marynarz SELECT * FROM postac WHERE statek_1='rutrut' OR statek_1='qoqs';
+c)ALTER TABLE marynarz ADD FOREIGN KEY (statek_1) REFERENCES statek(nazwa_statku);
+ALTER TABLE marynarz ADD PRIMARY KEY(pesel);
+
+Zad 5
+a) UPDATE postac SET statek_1=default;
+b) DELETE FROM postac WHERE nazwa='Jan';
+c) ALTER TABLE postac DROP FOREIGN KEY postac_ibfk_1;- usuwamy relację między statkiem a postacią.
+ALTER TABLE marynarz DROP FOREIGN KEY marynarz_ibfk_1;- usuwamy relację między statkiem a marynarzem.
+DELETE FROM statek; - opróżniamy tabelę statek z danych.
+d)DROP TABLE statek;
+e)CREATE TABLE zwierz(idZwierza PRIMARY KEY AUTO_INCREMENT, nazwa VARCHAR(40), wiek INT(3));
+f)INSERT INTO zwierz SELECT id_postaci, nazwa, wiek FROM postac WHERE rodzaj not in('wiking', 'kobieta');
+
