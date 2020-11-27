@@ -1,0 +1,36 @@
+zad 1
+1. CREATE TABLE kreatura SELECT * FROM wikingowie.kreatura;
+CREATE TABLE [AS] zasob SELECT * FROM wikingowie.zasob;
+CREATE TABLE zasob SELECT * FROM wikingowie.ekwipunek;
+
+tworzenie klucza glownego dla poszczegulnych tabel:
+ALTER TABLE zasob ADD PRIMARY KEY(idZasobu);
+
+tworzenie klucza obcego dla poszczegulnych tabel:
+ALTER TABLE ekwipunek ADD FOREIGN KEY(idZasobu) REFERENCES zasob(idZasobu);
+2. SELECT * FROM zasob ;
+3. SELECT * FROM zasob WHERE rodzaj ='jedzenie';
+4. SELECT idZasobu, ilosc FROM ekwipunek WHERE idKreatury IN(1, 3, 5); 
+
+Zad 2
+1. SELECT * FROM kreatura WHERE rodzaj!='wiedzma' AND udzwig>=50;
+2. SELECT * FROM kreatura WHERE waga BETWEEN 2 AND 5;
+3. SELECT * FROM kreatura WHERE nazwa LIKE '%or%' AND udzwig BETWEEN 30 AND 70;
+
+Zad 3
+1.SELECT * FROM zasob WHERE MONTH(dataPozyskania) IN(7,8);
+2.SELECT * FROM WHERE rodzaj is NOT NULL ORDER BY waga ASC
+lub SELECT * FROM WHERE rodzaj !='' ORDER BY waga ASC
+wypi
+3.SELECT * FROM kreatura order BY dataUr DESC LIMIT 0, 5;
+
+Zad 4
+1. select distinct(rodzaj) from zasob;
+2. select concat(nazwa, " - ", rodzaj) FROM kreatura WHERE rodzaj LIKE 'wi%';
+3. SELECT nazwa, waga*ilosc AS 'cakowita waga' FROM zasob WHERE YEAR(dataPozyskania) BETWEEN 2000 AND 2007; ( BETWEEN '2000-01-01' AND '2007-12-31';)
+
+Zad 5
+1.SELECT waga*ilosc, 0.3*waga*ilosc FROM zasob WHERE rodzaj = ' jedzenie';
+2.SELECT nazwa FROM zasob WHERE rodzaj IS NULL GROUP BY nazwa;
+ SELECT DISTINCT nazwa FROM zasob WHERE rodzaj IS NULL;
+3.SELECT DISTINCT rodzaj [czy nazwa] FROM zasob WHERE nazwa LIKE 'Ba%' OR nazwa LIKE '%os' ORDER BY nazwa; - bezsensowane jeżeli wypiszemy tylko rodzaj
