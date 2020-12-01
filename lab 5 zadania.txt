@@ -34,3 +34,4 @@ Zad 5
 2.SELECT nazwa FROM zasob WHERE rodzaj IS NULL GROUP BY nazwa;
  SELECT DISTINCT nazwa FROM zasob WHERE rodzaj IS NULL;
 3.SELECT DISTINCT rodzaj [czy nazwa] FROM zasob WHERE nazwa LIKE 'Ba%' OR nazwa LIKE '%os' ORDER BY nazwa; - bezsensowane jeżeli wypiszemy tylko rodzaj
+SELECT rodzaj FROM zasob WHERE nazwa LIKE "Ba%" or nazwa LIKE "%os" GROUP BY rodzaj; -inny sposób.
