@@ -1,0 +1,53 @@
+Zad 1
+1. SELECT avg(waga) FROM kreatura WHERE rodzaj = 'wiking';
+2. SELECT rodzaj, " - ", avg(waga), count(rodzaj) FROM kreatura group by rodzaj; 
+3. SELECT rodzaj, AVG(2020 - YEAR(dataUr)) FROM kreatura GROUP BY rodzaj;
+
+Zad 2
+1.SELECT rodzaj, sum(waga) FROM zasob group by rodzaj; (dla każdego rodzaju wyswietla sumę wag poszczególnych rzeczy)
+2.SELECT nazwa, AVG(waga) FROM zasob WHERE ilosc>=4 GROUP BY nazwa HAVING SUM(waga)>10;  
+3.SELECT rodzaj, COUNT(DISTINCT(nazwa)) FROM zasob WHERE ilosc>1  GROUP BY rodzaj; - podobno trzeba to z HAVING zrobic?
+
+
+SELECT k.idKreatury, e.idKreatury  FROM kreatura k, ekwipunek e   (<-- zestawia wszystkie kombinacje dwuch kolumn k.idKreatury, e.idKreatury)
+SELECT * FROM kreatura k, ekwipunek e WHERE k.idKreatury=e.idKreatury; - wypisuje zestawione ze sobą dwie tabele.
+Zad3.
+1.SELECT kreatura.nazwa, SUM(ekwipunek.ilosc) AS ilosc_zasobow FROM kreatura, ekwipunek WHERE kreatura.idKreatury=ekwipunek.idKreatury GROUP BY nazwa;
+2.SELECT kreatura.nazwa, zasob.nazwa FROM kreatura, ekwipunek, zasob WHERE kreatura.idKreatury=ekwipunek.idKreatury AND ekwipunek.idZasobu=zasob.idZasobu;
+-połączenie trzech tabel( kreatura, ekwipunek, zasob).
+3.SELECT kreatura.idkreatury, nazwa, ekwipunek.idKreatury FROM kreatura LEFT JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury WHERE ekwipunek.idKreatury IS NULL;
+drugi sposób
+SELECT kreatura.idkreatury, nazwa FROM kreatura WHERE kreatura.idKreatury NOT IN(SELECT ekwipunek.idKreatury FROM ekwipunek WHERE ekwipunek.idKreatury IS NOT NULL);
+ 
+SELECT * FROM kreatura WHERE kreatura.idKreatury IN (SELECT ekwipunek.idKreatury FROM ekwipunek [WHERE ekwipunek.idKreatury IS NOT NULL]);
+-wyswietla wartosci z kreatury które zarówno występują w ekwipunku.
+Zad 4
+1.SELECT kreatura.nazwa, zasob.nazwa FROM kreatura NATURAL JOIN ekwipunek INNER JOIN zasob WHERE ekwipunek.idZasobu=zasob.idZasobu AND kreatura.rodzaj='wiking' AND YEAR(kreatura.dataUr) BETWEEN 1670 AND 1679;
+2.SELECT kreatura.nazwa FROM kreatura, ekwipunek, zasob WHERE kreatura.idKreatury=ekwipunek.idKreatury AND ekwipunek.idZasobu=zasob.idZasobu AND zasob.rodzaj='jedzenie' ORDER BY YEAR(dataUr) DESC LIMIT 5;
+3.SELECT CONCAT(m.nazwa, " - ", n.nazwa) A FROM kreatura AS m INNER JOIN kreatura AS n ON  m.idKreatury=n.idKreatury-5;
+
+Zad 5
+1.
+SELECT kreatura.rodzaj, AVG(zasob.waga*ekwipunek.ilosc) AS srednia_waga_zasobow,
+FROM kreatura, ekwipunek, zasob WHERE kreatura.idKreatury=ekwipunek.idKreatury 
+AND ekwipunek.idZasobu=zasob.idZasobu 
+AND kreatura.rodzaj NOT IN ('malpa', 'waz') GROUP BY kreatura.rodzaj 
+HAVING SUM(ekwipunek.ilosc)<30;
+
+2.Najpierw trzeba się zastanowić co należy zrobić:
+Mamy Wyświetlić rodzaj, nazwę i datę Urodzenia dla najmłodszej i najstarszej kreatury (dla wszystkich rodzajów)
+
+SELECT kreatura.rodzaj, kreatura.nazwa, kreatura.dataUr FROM
+(SELECT rodzaj, MIN(dataUr) AS min, MAX(dataUr) AS max FROM kreatura GROUP BY rodzaj) AS jeden, kreatura
+WHERE kreatura.dataUr=min OR kreatura.dataUr=max;
+
+Drugi sposób:
+SELECT jeden.rodzaj, jeden.min, dwa.nazwa FROM 
+(SELECT kreatura.rodzaj, MIN(kreatura.dataUr) AS min FROM kreatura GROUP BY rodzaj) AS jeden, 
+(SELECT nazwa, dataUr FROM kreatura) AS dwa 
+WHERE jeden.min=dwa.dataUr
+UNION
+SELECT jeden.rodzaj, jeden.max, dwa.nazwa FROM 
+(SELECT kreatura.rodzaj, MAX(kreatura.dataUr) AS max FROM kreatura GROUP BY rodzaj) AS jeden, 
+(SELECT nazwa, dataUr FROM kreatura) AS dwa 
+WHERE jeden.max=dwa.dataUr;
