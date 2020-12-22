@@ -1,0 +1,59 @@
+zad1
+1.CREATE TABLE etapy_wyprawy SELECT * FROM wikingowie.etapy_wyprawy;
+CREATE TABLE wyprawa SELECT * FROM wikingowie.wyprawa;
+CREATE TABLE sektor SELECT * FROM wikingowie.sektor;
+CREATE TABLE uczestnicy SELECT * FROM wikingowie.uczestnicy;
+należy przed dodaniem kluczy obcych dodać jeszcze PRIMARY KEY i AUTO_INCEREMENT do tabel skopiowanych z wikingow. 
+ALTER TABLE wyprawa ADD FOREIGN KEY (kierownik) REFERENCES kreatura(idKreatury);
+ALTER TABLE uczestnicy ADD FOREIGN KEY (id_wyprawy) REFERENCES wyprawa(id_wyprawy);
+ALTER TABLE uczestnicy ADD FOREIGN KEY (id_uczestnika) REFERENCES kreatura(idKreatury);
+ALTER TABLE etapy_wyprawy ADD FOREIGN KEY (idWyprawy) REFERENCES wyprawa(id_wyprawy);
+ALTER TABLE etapy_wyprawy ADD FOREIGN KEY (sektor) REFERENCES sektor(id_sektora);
+
+2.SELECT kreatura.nazwa FROM kreatura LEFT JOIN uczestnicy ON kreatura.idKreatury=uczestnicy.id_uczestnika WHERE id_uczestnika IS NULL ;
+drugi sposób:
+SELECT kreatura.nazwa FROM kreatura WHERE idKreatury  NOT IN(SELECT id_uczestnika FROM uczestnicy );
+3.łączymy wyprawa + uczestnicy + ekwipunek;
+SELECT wyprawa.nazwa, SUM(ekwipunek.ilosc) 
+FROM wyprawa, uczestnicy, ekwipunek 
+WHERE wyprawa.id_wyprawy=uczestnicy.id_wyprawy 
+AND uczestnicy.id_uczestnika=ekwipunek.idKreatury
+GROUP BY wyprawa.nazwa;
+
+zad2
+1.SELECT wyprawa.nazwa AS nazwa_wyprawy, COUNT(wyprawa.nazwa), GROUP_CONCAT(kreatura.nazwa) AS uczestnicy FROM wyprawa, uczestnicy, kreatura 
+WHERE wyprawa.id_wyprawy=uczestnicy.id_wyprawy 
+AND uczestnicy.id_uczestnika=kreatura.idKreatury
+GROUP BY wyprawa.nazwa;
+2.SELECT etapy_wyprawy.idEtapu, etapy_wyprawy.sektor, kreatura.nazwa AS nazwa_kierownika 
+FROM etapy_wyprawy, wyprawa, kreatura 
+WHERE etapy_wyprawy.idWyprawy=wyprawa.id_wyprawy 
+AND wyprawa.kierownik=kreatura.idKreatury
+ORDER BY data_rozpoczecia [/etapy_wyprawy.kolejnosc];
+
+zad3
+1.select sektor.nazwa, count(etapy_wyprawy.sektor) 
+FROM etapy_wyprawy RIGHT JOIN sektor 
+ON etapy_wyprawy.sektor=sektor.id_sektora GROUP BY  sektor.id_sektora;
+2.<-- sprwadź czy dobrze ! 
+select kreatura.nazwa ,count(uczestnicy.id_uczestnika), if(count(uczestnicy.id_uczestnika)=0,
+ "nie_bral_udzialu_w_wyprawie", "brał_udział_w_wyprawie") 
+FROM uczestnicy RIGHT JOIN kreatura 
+ON uczestnicy.id_uczestnika=kreatura.idKreatury GROUP BY kreatura.nazwa;
+
+zad4
+1.  SELECT wyprawa.nazwa, SUM(length(etapy_wyprawy.dziennik)) 
+FROM wyprawa, etapy_wyprawy WHERE wyprawa.id_wyprawy=etapy_wyprawy.idWyprawy  
+GROUP BY wyprawa.nazwa HAVING SUM(length(etapy_wyprawy.dziennik))<400; 
+2.  SELECT w.nazwa,
+COUNT(DISTINCT(u.id_uczestnika)),
+SUM(e.ilosc*z.waga)/COUNT(DISTINCT(u.id_uczestnika)) AS "średnia waga"
+FROM wyprawa AS w
+LEFT JOIN uczestnicy AS u ON w.id_wyprawy = u.id_wyprawy
+LEFT JOIN kreatura AS k ON u.id_uczestnika = k.idKreatury
+LEFT JOIN ekwipunek AS e ON k.idKreatury= e.idKreatury
+LEFT JOIN zasob AS z ON e.idZasobu = z.idZasobu
+GROUP BY w.nazwa;
+
+zad5
+1. 
